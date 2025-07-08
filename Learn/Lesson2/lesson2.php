@@ -15,7 +15,7 @@
     $resource = fopen("example.txt", "r"); // Resource
 
     var_dump($variable);    // Variable type and value
-    exit();                 // Exit the script 
+    exit();                 // Thoát khỏi chương trình và không thực thi các dòng sau
 
     # Arithmetic operations
     // Concatenation
