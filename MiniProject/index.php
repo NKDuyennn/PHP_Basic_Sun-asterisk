@@ -14,23 +14,21 @@
             case 'login':
                 $usercontroller->login();
                 break;
-            }
+            case 'register':
+                $usercontroller->register();
+                break;
+            case 'homepage':
+                $usercontroller->homepage();
+                break;
+            case 'logout':
+                $usercontroller->logout();
+                break;
+            default:
+                $usercontroller->login();
+                break;
+        }
+        break;
     }
-    //         case 'register':
-    //             $usercontroller->register();
-    //             break;
-    //         case 'homepage':
-    //             $usercontroller->homepage();
-    //             break;
-    //         case 'logout':
-    //             $usercontroller->logout();
-    //             break;
-    //         default:
-    //             $usercontroller->login();
-    //             break;
-    //     }
-    //     break;
-
     //     case 'PostController':
     //     require_once('controllers/PostController.php');
     //     $postcontroller = new PostController();
