@@ -99,6 +99,76 @@
         }
 
 
+        public function updatePost($data)
+        {
+            $con = $this->connect();
+
+            $data['slug'] = $this->generateSlug($data['title']);
+            if (empty($data['slug'])) {
+
+                $data['slug'] = uniqid('post-');
+            }
+
+            // Upload thumbnail
+            $currentThumbnail = $this->getPostById($data['id'])['thumbnail'];
+            if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] == 0) {
+                $uploadDir = 'public/images/post/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+
+                // Xóa ảnh cũ nếu tồn tại
+                if (!empty($currentThumbnail) && file_exists($uploadDir . $currentThumbnail)) {
+                    unlink($uploadDir . $currentThumbnail);
+                }
+
+                // Tạo tên file mới
+                $fileExtension = pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION);
+                $thumbnailName = time() . '_' . $data['slug'] . '.' . $fileExtension;
+                $uploadPath = $uploadDir . $thumbnailName;
+
+                if (!move_uploaded_file($_FILES['thumbnail']['tmp_name'], $uploadPath)) {
+                    throw new Exception("Upload thumbnail failed!");
+                }
+                $data['thumbnail'] = $thumbnailName;
+            } else {
+                // Nếu không upload ảnh mới thì giữ nguyên ảnh cũ
+                $data['thumbnail'] = $currentThumbnail;
+            }
+
+            $data['author_id'] = $_SESSION['user']['id'];
+            $sql = "UPDATE `posts` SET title = ?, slug = ?, excerpt = ?, content = ?, thumbnail = ?, author_id = ?, category_id = ?, status = ?, updated_at = NOW() WHERE id = ?";
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("sssssiisi", $data['title'], $data['slug'], $data['excerpt'], $data['content'], $data['thumbnail'], $data['author_id'], $data['category_id'], $data['status'], $data['id']);
+            $stmt->execute();
+
+            return $stmt->affected_rows > 0;
+        }
+
+        public function deletePost($id)
+        {
+            $con = $this->connect();
+
+            $currentThumbnail = $this->getPostById($id)['thumbnail'];
+            
+            $sql = "DELETE FROM `posts` WHERE id = ?";
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+
+            if ($stmt->affected_rows > 0) {
+                if (!empty($currentThumbnail)) {
+                    $filePath = 'public/images/post/' . $currentThumbnail;
+                    if (file_exists($filePath)) {
+                        unlink($filePath); 
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        
         public function generateSlug($string) {
             // Chuyển tiếng Việt có dấu thành không dấu
             $transliteration = array(
