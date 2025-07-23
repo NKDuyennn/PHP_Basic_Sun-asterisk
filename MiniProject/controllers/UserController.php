@@ -32,27 +32,27 @@
                     $user = $this->model->getUserLogin($username, $password);
                     // echo var_dump($user);
                     if ($user) {
-                        $_SESSION['user'] = $user; // Store user info in session
+                        $_SESSION['user'] = $user; 
 
                         if (isset($_POST['remember'])) {
-                            // Set cookies for username and password
+                            
                             setcookie('remember_username', $username, time() + (86400 * 30)); // 30 days
                             setcookie('remember_password', $_POST['password'], time() + (86400 * 30)); // 30 days
                         } else {
-                            // Clear cookies if not remembering
+                            
                             setcookie('remember_username', '', time() - 3600);
                             setcookie('remember_password', '', time() - 3600);
                         }
 
 
                         $message = "Login successful!";
-                        $_SESSION['message'] = $message; // Store message in session
-                        header('Location: index.php?controller=User&action=homepage'); // Redirect to homepage
+                        $_SESSION['message'] = $message;
+                        header('Location: index.php?controller=User&action=homepage'); 
                         exit();
                     } else {
                         $message = "Login failed!";
                         $message = $message . "<br>Please check your username and password.";
-                        $_SESSION['message'] = $message; // Store message in session
+                        $_SESSION['message'] = $message;
                         require_once('views/Login.php');
                     }
                 } else {

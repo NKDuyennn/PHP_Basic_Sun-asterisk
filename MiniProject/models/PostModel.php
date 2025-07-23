@@ -68,7 +68,7 @@
                 $data['slug'] = uniqid('post-');
             }
 
-            // Upload thumbnail
+            
             $thumbnailName = null;
             if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] == 0) {
                 $uploadDir = 'public/images/post/';
@@ -76,7 +76,6 @@
                     mkdir($uploadDir, 0777, true); // Tạo folder nếu chưa có
                 }
 
-                // Tạo tên file duy nhất để tránh trùng
                 $fileExtension = pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION);
                 $thumbnailName = time() . '_' . $data['slug'] . '.' . $fileExtension;
                 $uploadPath = $uploadDir . $thumbnailName;
@@ -109,7 +108,7 @@
                 $data['slug'] = uniqid('post-');
             }
 
-            // Upload thumbnail
+            
             $currentThumbnail = $this->getPostById($data['id'])['thumbnail'];
             if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] == 0) {
                 $uploadDir = 'public/images/post/';
@@ -117,12 +116,12 @@
                     mkdir($uploadDir, 0777, true);
                 }
 
-                // Xóa ảnh cũ nếu tồn tại
+                
                 if (!empty($currentThumbnail) && file_exists($uploadDir . $currentThumbnail)) {
                     unlink($uploadDir . $currentThumbnail);
                 }
 
-                // Tạo tên file mới
+                
                 $fileExtension = pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION);
                 $thumbnailName = time() . '_' . $data['slug'] . '.' . $fileExtension;
                 $uploadPath = $uploadDir . $thumbnailName;
@@ -132,7 +131,7 @@
                 }
                 $data['thumbnail'] = $thumbnailName;
             } else {
-                // Nếu không upload ảnh mới thì giữ nguyên ảnh cũ
+                
                 $data['thumbnail'] = $currentThumbnail;
             }
 
@@ -170,7 +169,7 @@
 
         
         public function generateSlug($string) {
-            // Chuyển tiếng Việt có dấu thành không dấu
+            
             $transliteration = array(
                 'à'=>'a','á'=>'a','ạ'=>'a','ả'=>'a','ã'=>'a',
                 'â'=>'a','ầ'=>'a','ấ'=>'a','ậ'=>'a','ẩ'=>'a','ẫ'=>'a',
@@ -200,13 +199,10 @@
             );
             $string = strtolower(strtr($string, $transliteration));
 
-            // Loại bỏ ký tự đặc biệt
             $string = preg_replace('/[^a-z0-9\s-]/', '', $string);
 
-            // Thay khoảng trắng và dấu _ bằng dấu -
             $string = preg_replace('/[\s_]+/', '-', $string);
 
-            // Loại bỏ dấu - dư ở đầu và cuối
             $string = trim($string, '-');
 
             return $string;
